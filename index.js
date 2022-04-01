@@ -18,38 +18,28 @@ if (process.env.NODE_ENV === "production") {
   app.use(cors());
 }
 
-app.use(currentUser);
-app.set("etag", false);
+// app.use(currentUser);
 
-/*
- * require routes
- */
-require("./src/routes")(app, sequelize);
+require("./src/routes")(app)
+// const routes = ["./src/routes/**/*Routes.js"];
+// const specs = swagger(app, sequelize, { apis: [...routes] });
+// app.use("/docs", swaggerUi.serve);
+// app.get(
+//   "/docs",
+//   swaggerUi.setup(specs, {
+//     explorer: false,
+//   })
+// );
 
-/*
- * generate models doc, routes doc.
- * required parameters:
- * routes folder path
- */
-const routes = ["./src/routes/**/*Routes.js"];
-const specs = swagger(app, sequelize, { apis: [...routes] });
-app.use("/docs", swaggerUi.serve);
-app.get(
-  "/docs",
-  swaggerUi.setup(specs, {
-    explorer: false,
-  })
-);
+// app.get("/", (req, res) => {
+//   res.send(`API server is up and running... <a href="/docs/">Click here</a> to access the API documentations.`);
+// });
 
-app.get("/", (req, res) => {
-  res.send(`API server is up and running... <a href="/docs/">Click here</a> to access the API documentations.`);
-});
+// app.all("*", async () => {
+//   throw new BadRequestError("Invalid url");
+// });
 
-app.all("*", async () => {
-  throw new BadRequestError("Invalid url");
-});
-
-app.use(errorHandler);
+app.use(require('./middleware/error-handler'));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, async () => {
